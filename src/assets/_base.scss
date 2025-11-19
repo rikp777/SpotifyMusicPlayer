@@ -1,0 +1,17 @@
+/* Hier plak je die hele normalize.css code */
+html {
+  box-sizing: border-box;
+  line-height: 1.15;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: var(--colour-background-now-playing); /* Fallback */
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+}

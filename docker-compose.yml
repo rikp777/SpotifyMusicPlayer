@@ -1,0 +1,9 @@
+services:
+  nowify:
+    build: .
+    container_name: music-player
+    ports:
+      - "8008:80"
+    environment:
+      - VITE_SP_CLIENT_ID=${VITE_SP_CLIENT_ID}
+      - VITE_SP_CLIENT_SECRET=${VITE_SP_CLIENT_SECRET}

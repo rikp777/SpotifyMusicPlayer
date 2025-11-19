@@ -1,0 +1,19 @@
+@font-face {
+  font-display: swap;
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: var(--font-weight-heading);
+  letter-spacing: -1.25px;
+  margin: 0 0 var(--spacing-m) 0;
+  word-break: break-word;
+}
+
+p {
+  font-size: 1.2em;
+  line-height: 1.4;
+}
