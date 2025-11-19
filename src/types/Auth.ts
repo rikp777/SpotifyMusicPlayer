@@ -18,6 +18,11 @@ export interface PlayerState {
   };
   progressMs: number;
   durationMs: number;
+
+  release_date?: string;
+  tags?: string[];
+  popularity?: number;
+
   nextTrack?: {
     title: string;
     artist: string;

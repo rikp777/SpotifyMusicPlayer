@@ -5,6 +5,10 @@ const API_ENDPOINT_BASE = 'https://api.spotify.com/v1';
 const NOW_PLAYING_PATH = 'me/player/currently-playing';
 const QUEUE_PATH = 'me/player/queue';
 const RECENTLY_PLAYED_PATH = 'me/player/recently-played';
+const AUDIO_FEATURES_PATH = 'audio-features';
+
+const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY;
+const LASTFM_BASE = 'https://ws.audioscrobbler.com/2.0/';
 
 const playerState = ref<PlayerState>({
   playing: false,
@@ -13,7 +17,11 @@ const playerState = ref<PlayerState>({
   trackAlbum: {},
   durationMs: 0,
   progressMs: 0,
+  release_date: undefined,
+  popularity: undefined,
+  tags: [],
   nextTrack: undefined,
+  previousTrack: undefined,
 });
 
 let pollPlaying: number | undefined;
@@ -28,7 +36,11 @@ export function useSpotifyApi(auth: AuthState, requestRefreshToken: () => void) 
       trackAlbum: {},
       progressMs: 0,
       durationMs: 0,
+      release_date: undefined,
+      popularity: undefined,
+      tags: [],
       nextTrack: undefined,
+      previousTrack: undefined,
     };
   }
 
@@ -56,7 +68,12 @@ export function useSpotifyApi(auth: AuthState, requestRefreshToken: () => void) 
     startLocalProgress();
   }
 
-  function handleNowPlayingResponse(data: any, nextTrackData: any, previousTrackData: any) {
+  function handleNowPlayingResponse(
+    data: any,
+    nextTrackData: any,
+    previousTrackData: any,
+    tagsData: string[]
+  ) {
     if (data.is_playing === false) {
       playerState.value = getEmptyPlayer();
       return;
@@ -84,9 +101,40 @@ export function useSpotifyApi(auth: AuthState, requestRefreshToken: () => void) 
         },
         progressMs: data.progress_ms,
         durationMs: data.item.duration_ms,
+
+        release_date: data.item.album.release_date,
+        popularity: data.item.popularity,
+        tags: tagsData,
+
         nextTrack: nextTrackData,
-        previousTrack: previousTrackData
+        previousTrack: previousTrackData,
       };
+    }
+  }
+
+  async function getLastFmTags(artist: string, track: string) {
+    if (!LASTFM_API_KEY) return [];
+    try {
+
+      const safeArtist = encodeURIComponent(artist).replace(/%20/g, '+');
+      const safeTrack = encodeURIComponent(track).replace(/%20/g, '+');
+
+      const url = `${LASTFM_BASE}?method=track.gettoptags&api_key=${LASTFM_API_KEY}&artist=${safeArtist}&track=${safeTrack}&autocorrect=1&format=json`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.toptags && data.toptags.tag) {
+        const tags = Array.isArray(data.toptags.tag) ? data.toptags.tag : [data.toptags.tag];
+
+        return tags
+          .slice(0, 3)
+          .map((t: any) => t.name);
+      }
+      return [];
+    } catch (e) {
+      console.error('Last.fm fetch error:', e);
+      return [];
     }
   }
 
@@ -165,17 +213,21 @@ export function useSpotifyApi(auth: AuthState, requestRefreshToken: () => void) 
 
       let nextTrackData = undefined;
       let previousTrackData = undefined;
-      if (data.is_playing) {
-        const [queue, recent] = await Promise.all([
+      let tagsData: string[] = [];
+
+      if (data.is_playing && data.item && data.item.id) {
+        const [queue, recent, tags] = await Promise.all([
           getQueue(auth.accessToken),
-          getRecentlyPlayed(auth.accessToken)
+          getRecentlyPlayed(auth.accessToken),
+          getLastFmTags(data.item.artists[0].name, data.item.name)
         ]);
 
         if (queue) nextTrackData = queue;
         if (recent) previousTrackData = recent;
+        if (tags) tagsData = tags;
       }
 
-      handleNowPlayingResponse(data, nextTrackData, previousTrackData);
+      handleNowPlayingResponse(data, nextTrackData, previousTrackData, tagsData);
 
     } catch (error) {
       console.error('Error retrieving Now Playing data:', error);

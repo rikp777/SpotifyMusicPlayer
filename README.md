@@ -23,6 +23,7 @@ A Vue 3 + TypeScript application designed for smart mirrors and dedicated displa
 - Node.js (v16+)
 - A Spotify Developer Account
 - A Spotify Premium account (recommended for real-time API updates)
+- Optional: Last.fm API Key (for fetching genre/vibe tags)
 
 ## 🚀 Installation
 
@@ -38,15 +39,53 @@ A Vue 3 + TypeScript application designed for smart mirrors and dedicated displa
     ```
 
 3.  **Spotify App Setup:**
-    * Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
+    * Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
     * Create a new app.
     * Add `http://localhost:5173/callback` (or your production URL) to the **Redirect URIs**.
 
 4.  **Environment Variables:**
-    Create a `.env` file in the root:
+    Create a `.env` file in the root directory. Configure the API keys and UI preferences as needed:
+
     ```env
-    VITE_SPOTIFY_CLIENT_ID=your_client_id_here
-    VITE_SPOTIFY_REDIRECT_URI=http://localhost:5173/callback
+    # --- API KEYS ---
+    
+    # Spotify Configuration
+    VITE_SP_CLIENT_ID="your_spotify_client_id"
+    VITE_SP_CLIENT_SECRET="your_spotify_client_secret"
+    # Ensure this matches your Spotify Dashboard settings
+    VITE_SPOTIFY_REDIRECT_URI="http://localhost:5173/callback"
+
+    # Last.fm (Optional - required for genre/vibe tags)
+    VITE_LASTFM_API_KEY="your_lastfm_api_key"
+
+
+    # --- UI CONFIGURATION ---
+
+    # Display Mode: 'standard' (Color) or 'eink' (High contrast B&W)
+    VITE_DISPLAY_TYPE="standard"
+
+    # Show the clickable control buttons on screen?
+    VITE_SHOW_CONTROLS=true
+
+    # --- STARTUP DEFAULTS ---
+    
+    # Show Album text on load?
+    VITE_START_WITH_ALBUM_VISIBLE=true
+    # Start directly in the rotating Vinyl view?
+    VITE_START_IN_VINYL_MODE=true
+
+    # --- VISUAL ELEMENTS ---
+
+    # Show History and Queue (small records/covers)
+    VITE_SHOW_PREVIOUS_TRACK=true
+    VITE_SHOW_NEXT_TRACK=true
+    
+    # Metadata details
+    VITE_SHOW_TRACK_YEAR=true
+    VITE_SHOW_TRACK_POPULARITY=true
+
+    # Show scannable Spotify Code
+    VITE_SHOW_SPOTIFY_CODE=true
     ```
 
 ## 🔑 Scopes & Permissions
