@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{ 'eink-mode': isEinkMode }">
     <div
       v-if="player.playing"
       class="now-playing"
@@ -82,12 +82,14 @@
       <h1 class="now-playing__idle-heading">No music playing 😔</h1>
     </div>
   </div>
+  {{isEinkMode}}
 </template>
 
 <script setup lang="ts">
 import { computed, toRefs, ref } from 'vue';
 import type { PlayerState, AuthState } from '@/types/Auth';
 import { useAlbumColors } from '@/composables/useAlbumColors';
+const isEinkMode = import.meta.env.VITE_DISPLAY_TYPE === 'eink';
 
 const props = defineProps<{
   auth: AuthState;
@@ -99,8 +101,9 @@ const isVinylMode = ref(false);
 const showAlbum = ref(true);
 
 const albumImageUrl = computed(() => player.value.trackAlbum.image);
-
-useAlbumColors(albumImageUrl);
+if (!isEinkMode) {
+  useAlbumColors(albumImageUrl);
+}
 
 const getTrackArtists = computed((): string => {
   return props.player.trackArtists.join(', ');
@@ -484,6 +487,71 @@ const spotifyCodeUrl = computed(() => {
       .now-playing__image {
         max-width: 500px;
       }
+    }
+  }
+}
+
+.eink-mode {
+  filter: grayscale(100%) contrast(120%);
+
+  .now-playing {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    transition: none !important;
+  }
+
+  .now-playing__image,
+  .meta-track__image,
+  .now-playing__details {
+    box-shadow: none !important;
+    background-image: none !important;
+  }
+
+  .now-playing__image {
+    border: 4px solid #000000;
+  }
+
+  .meta-track__image {
+    border: 1px solid #000000;
+  }
+
+  .now-playing--vinyl .now-playing__image {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .progress-bar {
+    background-color: #cccccc !important;
+    border: 1px solid #000000;
+
+    &__fill {
+      background-color: #000000 !important;
+
+      transition: none !important;
+    }
+  }
+
+  .now-playing__artists,
+  .now-playing__album,
+  .meta-track {
+    opacity: 1 !important;
+    color: #000000;
+  }
+
+  .control-btn {
+    color: black;
+    border: 2px solid black;
+    background: transparent;
+    font-weight: bold;
+  }
+
+  .now-playing--vinyl {
+    background-color: #FFFFFF !important;
+
+    .now-playing__details {
+      background-color: #FFFFFF !important;
+      color: #000000 !important;
+      border: 2px solid #000000;
     }
   }
 }
