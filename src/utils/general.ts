@@ -20,3 +20,8 @@ export function setStoredAuth(authState: any) {
     console.error('Could not save auth', err)
   }
 }
+
+export const getEnv = (key: string, isVinyl: boolean) => {
+  const prefix = isVinyl ? 'VITE_VINYL_' : 'VITE_STD_'
+  return import.meta.env[`${prefix}${key}`] !== 'false'
+}

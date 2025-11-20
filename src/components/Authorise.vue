@@ -1,16 +1,16 @@
 <template>
   <div class="authorise">
-    <h1 class="authorise__heading">Nowify</h1>
+    <h1 class="authorise__heading">Authorise</h1>
 
     <p class="authorise__copy">
-      Nowify is een simpele Spotify 'Now Playing' scherm voor de Raspberry Pi. Log in en begin met muziek luisteren!
+      Log in and start listening to music!
     </p>
 
     <button
       class="authorise__button button button--authorise"
       @click="initAuthorise"
     >
-      Login met Spotify
+      Log in with Spotify
     </button>
   </div>
 </template>

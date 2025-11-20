@@ -12,11 +12,13 @@ A Vue 3 + TypeScript application designed for smart mirrors and dedicated displa
 - **Queue & History:** Displays the **Previous** and **Upcoming** tracks with cover art.
 - **Adaptive Theming:** Background color automatically extracts and adapts to the current album cover.
 - **Vinyl Mode:** A dedicated "LP" view with a rotating record animation for a retro feel.
+- **Smart Idle Screen:** Displays curated modern art from the Met Museum and inspirational quotes when no music is playing.
 - **Spotify Codes:** Generates a scannable code on the fly to share/play the track on other devices.
 - **Touch/Click Controls:** Toggle between List/Vinyl modes and show/hide album names.
 
 ![default_player.png](default_player.png)
 ![lp_player.png](lp_player.png)
+![idle.png](idle.png)
 
 ## 🛠️ Prerequisites
 
@@ -44,11 +46,13 @@ A Vue 3 + TypeScript application designed for smart mirrors and dedicated displa
     * Add `http://localhost:5173/callback` (or your production URL) to the **Redirect URIs**.
 
 4.  **Environment Variables:**
-    Create a `.env` file in the root directory. Configure the API keys and UI preferences as needed:
+    Create a `.env` file in the root directory. Configure the API keys and UI preferences.
+    
+    *Note: The UI configuration is split between Standard (List) mode and Vinyl (LP) mode.*
 
     ```env
     # --- API KEYS ---
-    
+
     # Spotify Configuration
     VITE_SP_CLIENT_ID="your_spotify_client_id"
     VITE_SP_CLIENT_SECRET="your_spotify_client_secret"
@@ -59,33 +63,35 @@ A Vue 3 + TypeScript application designed for smart mirrors and dedicated displa
     VITE_LASTFM_API_KEY="your_lastfm_api_key"
 
 
-    # --- UI CONFIGURATION ---
+    # --- UI GLOBAL CONFIGURATION ---
 
     # Display Mode: 'standard' (Color) or 'eink' (High contrast B&W)
     VITE_DISPLAY_TYPE="standard"
 
     # Show the clickable control buttons on screen?
     VITE_SHOW_CONTROLS=true
-
-    # --- STARTUP DEFAULTS ---
     
-    # Show Album text on load?
-    VITE_START_WITH_ALBUM_VISIBLE=true
     # Start directly in the rotating Vinyl view?
-    VITE_START_IN_VINYL_MODE=true
+    VITE_START_IN_VINYL_MODE=false
 
-    # --- VISUAL ELEMENTS ---
 
-    # Show History and Queue (small records/covers)
-    VITE_SHOW_PREVIOUS_TRACK=true
-    VITE_SHOW_NEXT_TRACK=true
-    
-    # Metadata details
-    VITE_SHOW_TRACK_YEAR=true
-    VITE_SHOW_TRACK_POPULARITY=true
+    # --- STANDARD MODE SETTINGS (List View) ---
+    VITE_STD_SHOW_ALBUM=false
+    VITE_STD_SHOW_PREVIOUS_TRACK=true
+    VITE_STD_SHOW_NEXT_TRACK=true
+    VITE_STD_SHOW_TRACK_YEAR=false
+    VITE_STD_SHOW_TRACK_POPULARITY=true
+    VITE_STD_SHOW_SPOTIFY_CODE=true
 
-    # Show scannable Spotify Code
-    VITE_SHOW_SPOTIFY_CODE=true
+
+    # --- VINYL MODE SETTINGS (LP View) ---
+    # Minimalist settings recommended for the record label
+    VITE_VINYL_SHOW_ALBUM=true
+    VITE_VINYL_SHOW_PREVIOUS_TRACK=true
+    VITE_VINYL_SHOW_NEXT_TRACK=true
+    VITE_VINYL_SHOW_TRACK_YEAR=false
+    VITE_VINYL_SHOW_TRACK_POPULARITY=false
+    VITE_VINYL_SHOW_SPOTIFY_CODE=false
     ```
 
 ## 🔑 Scopes & Permissions
@@ -101,3 +107,6 @@ This app requires specific permissions to function correctly. Ensure your authen
 **Development Server:**
 ```bash
 npm run dev
+```
+## Credits
+This project was inspired by the aesthetics and functionality of **Nowify**.
