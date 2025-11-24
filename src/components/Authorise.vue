@@ -17,9 +17,9 @@
 
 <script setup lang="ts">
 
-import { useAuth } from '@/composables/useAuth.ts'
+import { useSpotifyAuth } from '@/composables/useSpotifyAuth.ts'
 
-const { initAuthorise } = useAuth();
+const { initAuthorise } = useSpotifyAuth();
 </script>
 
 <style scoped>

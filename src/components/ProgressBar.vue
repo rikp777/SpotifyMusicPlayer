@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!isEinkMode"
+    v-if="!isEinkMode && durationMs > 0"
     class="progress-container"
     :class="{ 'is-vinyl': isVinylMode }"
   >
@@ -13,7 +13,7 @@
   </div>
 
   <div
-    v-else
+    v-else-if="isEinkMode && durationMs > 0"
     class="eink-timestamp"
     :class="{ 'is-vinyl': isVinylMode }"
   >

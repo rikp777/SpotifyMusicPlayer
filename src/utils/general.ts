@@ -1,4 +1,3 @@
-import type { AuthState } from '@/types/Auth.ts'
 
 const config = {
   authNamespace: 'nowify_auth_state'
@@ -21,7 +20,8 @@ export function setStoredAuth(authState: any) {
   }
 }
 
-export const getEnv = (key: string, isVinyl: boolean) => {
-  const prefix = isVinyl ? 'VITE_VINYL_' : 'VITE_STD_'
-  return import.meta.env[`${prefix}${key}`] !== 'false'
+export function getEnvBoolean(keySuffix: string, isVinyl: boolean): boolean {
+  const prefix = isVinyl ? 'VITE_VINYL_' : 'VITE_STD_';
+  const fullKey = `${prefix}${keySuffix}`;
+  return import.meta.env[fullKey] !== 'false';
 }

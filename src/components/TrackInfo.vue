@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getEnv } from '@/utils/general.ts'
+import { getEnvBoolean } from '@/utils/general.ts'
 
 
 
@@ -45,13 +45,13 @@ const props = defineProps<{
 }>()
 
 const showAlbum = computed(() => {
-  return getEnv('SHOW_ALBUM', props.isVinylMode)
+  return getEnvBoolean('SHOW_ALBUM', props.isVinylMode)
 })
 const showReleaseYear = computed(() => {
-  return getEnv('SHOW_TRACK_YEAR', props.isVinylMode)
+  return getEnvBoolean('SHOW_TRACK_YEAR', props.isVinylMode)
 })
 const showPopularity = computed(() => {
-  return getEnv('SHOW_TRACK_POPULARITY', props.isVinylMode)
+  return getEnvBoolean('SHOW_TRACK_POPULARITY', props.isVinylMode)
 })
 
 const formattedArtists = computed(() => props.artists.join(', '))
