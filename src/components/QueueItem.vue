@@ -4,8 +4,21 @@
     :class="[`meta-track--${type}`, { 'is-vinyl': isVinylMode }]"
   >
     <div class="sleeve-wrapper">
-      <img :src="track.image" class="meta-track__image" :alt="label" />
-      <div v-if="type !== 'top' && isVinylMode" class="vinyl-hole"></div>
+      <a
+        v-if="track.url"
+        :href="track.url"
+        target="_blank"
+        class="sleeve-link"
+        @click.stop
+      >
+        <img :src="track.image" class="meta-track__image" :alt="label" />
+        <div v-if="type !== 'top' && isVinylMode" class="vinyl-hole"></div>
+      </a>
+
+      <div v-else class="sleeve-link">
+        <img :src="track.image" class="meta-track__image" :alt="label" />
+        <div v-if="type !== 'top' && isVinylMode" class="vinyl-hole"></div>
+      </div>
     </div>
 
     <div class="meta-track__details">
@@ -25,6 +38,7 @@ interface SimpleTrack {
   artist: string
   image: string
   playCount?: number
+  url?: string
 }
 
 defineProps<{
@@ -44,6 +58,14 @@ defineProps<{
   opacity: 0.9;
   transition: all 0.3s ease;
   text-align: left;
+
+  .sleeve-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+  }
 
   &__image { width: 100%; height: 100%; object-fit: cover; }
 
@@ -74,7 +96,7 @@ defineProps<{
       .sleeve-wrapper {
         width: 18vmin; height: 18vmin;
         max-width: 150px; max-height: 150px;
-        border-radius: 50%; /* Rond */
+        border-radius: 50%;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         background: #111;
         border: 1px solid rgba(255,255,255,0.1);
@@ -86,6 +108,7 @@ defineProps<{
         background-color: #1a1a1a;
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 50%; z-index: 2;
+        pointer-events: none;
       }
 
       .meta-track__details {

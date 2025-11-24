@@ -58,7 +58,8 @@ export class SpotifyProvider implements MusicProvider {
         nextTrack: nextTrack,
         previousTrack: previousTrack,
 
-        provider: 'spotify'
+        provider: 'spotify',
+        trackUrl: data.item.external_urls?.spotify,
       };
 
     } catch (e) {
@@ -84,7 +85,8 @@ export class SpotifyProvider implements MusicProvider {
       return {
         title: track.name,
         artist: track.artists.map((a: any) => a.name).join(', '),
-        image: track.album.images[0]?.url
+        image: track.album.images[0]?.url,
+        url: track.external_urls?.spotify
       };
     } catch (e) {
       console.error('Spotify Top Track Error', e);
@@ -105,7 +107,8 @@ export class SpotifyProvider implements MusicProvider {
         return {
           title: nextItem.name,
           artist: nextItem.artists.map((a: any) => a.name).join(', '),
-          image: nextItem.album.images[0]?.url
+          image: nextItem.album.images[0]?.url,
+          url: nextItem.external_urls?.spotify
         };
       }
     } catch (e) {
@@ -127,7 +130,8 @@ export class SpotifyProvider implements MusicProvider {
         return {
           title: track.name,
           artist: track.artists.map((a: any) => a.name).join(', '),
-          image: track.album.images[0]?.url
+          image: track.album.images[0]?.url,
+          url: track.external_urls?.spotify
         };
       }
     } catch (e) {

@@ -16,7 +16,22 @@
     >
       <div class="now-playing__content-wrapper">
         <div class="now-playing__cover">
-          <img :src="player.trackAlbum.image" :alt="player.trackTitle" class="now-playing__image" />
+          <a
+            v-if="player.trackUrl"
+            :href="player.trackUrl"
+            target="_blank"
+            class="cover-link"
+            title="Open track"
+          >
+            <img :src="player.trackAlbum.image" :alt="player.trackTitle" class="now-playing__image" />
+          </a>
+
+          <img
+            v-else
+            :src="player.trackAlbum.image"
+            :alt="player.trackTitle"
+            class="now-playing__image"
+          />
         </div>
 
         <div class="now-playing__side-panel">
@@ -199,23 +214,28 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Controls */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .controls {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 20;
+  z-index: 50;
   display: flex;
   gap: 10px;
 }
+
 .control-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid white;
@@ -225,19 +245,12 @@ onUnmounted(() => {
   border-radius: 20px;
   font-size: 0.8rem;
   text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+
   &:hover {
     background: rgba(255, 255, 255, 0.4);
   }
-}
-
-/* Fade transitions voor Overlay */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .now-playing {
@@ -249,7 +262,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.5s ease;
+  transition: background-color 0.8s ease;
+  position: relative;
 
   &__content-wrapper {
     display: flex;
@@ -260,34 +274,51 @@ onUnmounted(() => {
     padding: var(--spacing-l);
     box-sizing: border-box;
   }
+
   &__cover {
     width: 100%;
     display: flex;
     justify-content: center;
     padding: var(--spacing-m);
     z-index: 1;
+    position: relative;
   }
-  &__side-panel {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+
+  .cover-link {
+    display: block;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
   }
 
   &__image {
     width: 100%;
     height: auto;
     max-width: 80vh;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
     transition: all 0.5s ease;
   }
+
+  &__side-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 2;
+  }
+
   &__details {
     text-align: center;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
   }
 
   .meta-tracks-container {
@@ -296,103 +327,9 @@ onUnmounted(() => {
     gap: 12px;
     width: 100%;
     max-width: 400px;
+    margin: 0 auto;
   }
 
-  /* --- VINYL MODE --- */
-  &--vinyl {
-    background-color: #000000;
-
-    .now-playing__content-wrapper {
-      position: relative;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-    }
-    .now-playing__side-panel {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-    .now-playing__cover {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: auto;
-      padding: 0;
-      pointer-events: auto;
-    }
-
-    .now-playing__image {
-      border-radius: 50%;
-      width: 80vmin;
-      height: 80vmin;
-      max-width: none;
-      animation: spin 10s linear infinite;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-      border: 2px solid rgba(20, 20, 20, 1);
-    }
-
-    .now-playing__details {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 22vmin;
-      height: 22vmin;
-      border-radius: 50%;
-      background-color: var(--colour-background-now-playing);
-      color: var(--color-text-primary);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      box-sizing: border-box;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-      background-image: radial-gradient(
-        circle at center,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(0, 0, 0, 0.2) 100%
-      );
-      z-index: 10;
-      pointer-events: auto;
-    }
-
-    .vibe-tags-minimal {
-      display: none;
-    }
-
-    .meta-tracks-container {
-      position: absolute;
-      bottom: 40px;
-      left: 0;
-      width: 100%;
-      max-width: none;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-evenly;
-      padding: 0 5vw;
-      box-sizing: border-box;
-      margin: 0;
-      z-index: 5;
-      pointer-events: none;
-    }
-
-    /* Sticker positie */
-    .vinyl-sticker-wrapper {
-      position: absolute;
-      top: -60vh;
-      left: 5vw;
-      z-index: 20;
-      transform: rotate(-10deg);
-      pointer-events: auto;
-    }
-  }
-
-  /* --- RESPONSIVE --- */
   @media only screen and (min-width: 768px) {
     &:not(.now-playing--vinyl) {
       .now-playing__content-wrapper {
@@ -418,33 +355,156 @@ onUnmounted(() => {
       .now-playing__image {
         max-width: 600px;
       }
+      .meta-tracks-container {
+        margin: 0;
+      }
+    }
+  }
+
+  /* ===========================
+     VINYL MODE
+     =========================== */
+  &--vinyl {
+    background-color: #0f0f0f;
+
+    .now-playing__content-wrapper {
+      position: relative;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .now-playing__side-panel {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .now-playing__cover {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: auto;
+      padding: 0;
+      pointer-events: auto;
+    }
+
+    .cover-link {
+      display: contents;
+    }
+
+    .now-playing__image {
+      border-radius: 50%;
+      width: 80vmin;
+      height: 80vmin;
+      max-width: none;
+      animation: spin 10s linear infinite;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(20, 20, 20, 1);
+
+      &:hover { transform: none; }
+    }
+
+    .now-playing__details {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24vmin;
+      height: 24vmin;
+      border-radius: 50%;
+
+      background-color: var(--colour-background-now-playing);
+      background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+
+      color: var(--color-text-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .vibe-tags-minimal {
+      display: none;
+    }
+
+    .meta-tracks-container {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      width: 100%;
+      max-width: none;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      padding: 0 5vw;
+      box-sizing: border-box;
+      margin: 0;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .vinyl-sticker-wrapper {
+      position: absolute;
+      top: -55vh;
+      left: 5vw;
+      z-index: 20;
+      transform: rotate(-10deg);
+      pointer-events: auto;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: rotate(-12deg) scale(1.05);
+      }
     }
   }
 }
-
-/* --- E-INK MODE --- */
 .eink-mode {
-  filter: contrast(110%) saturate(140%);
+  filter: contrast(120%) saturate(0%) brightness(110%);
+
   .now-playing {
     background-color: #ffffff !important;
     color: #000000 !important;
   }
+
   .now-playing__image {
     border: 4px solid #000000;
     box-shadow: none !important;
+    border-radius: 0;
   }
+
   .now-playing--vinyl {
     background-color: #ffffff !important;
+
     .now-playing__image {
       animation: none !important;
       border: 4px solid black;
+      border-radius: 50%;
       transform: rotate(0deg) !important;
     }
+
     .now-playing__details {
-      background-color: #fff;
+      background-color: #ffffff;
+      background-image: none;
       border: 2px solid black;
       color: black;
+      box-shadow: none;
     }
+  }
+
+  .control-btn {
+    border-color: black;
+    color: black;
+    background: transparent;
+    font-weight: bold;
   }
 }
 </style>

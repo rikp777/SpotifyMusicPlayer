@@ -37,7 +37,8 @@ export class LastfmProvider implements MusicProvider {
         previousTrackData = {
           title: previous.name,
           artist: previous.artist.name,
-          image: this.getImage(previous.image)
+          image: this.getImage(previous.image),
+          url: previous.url
         };
       }
 
@@ -57,7 +58,8 @@ export class LastfmProvider implements MusicProvider {
         previousTrack: previousTrackData,
         nextTrack: undefined,
 
-        provider: 'lastfm'
+        provider: 'lastfm',
+        trackUrl: current.url,
       };
 
     } catch (e) {
@@ -84,7 +86,8 @@ export class LastfmProvider implements MusicProvider {
         title: track.name,
         artist: track.artist.name,
         image: this.getImage(track.image),
-        playCount: parseInt(track.playcount)
+        playCount: parseInt(track.playcount),
+        url: track.url
       };
     } catch (e) {
       console.error('Last.fm Top Track Error', e);

@@ -15,6 +15,7 @@ export interface PlayerState {
   trackArtists: string[];
   trackTitle: string;
   trackId?: string;
+
   trackAlbum: {
     title?: string;
     image?: string;
@@ -30,20 +31,24 @@ export interface PlayerState {
     title: string;
     artist: string;
     image?: string;
+    url?: string;
   };
   previousTrack?: {
     title: string;
     artist: string;
     image?: string
+    url?: string;
   };
   topTrack?: {
     title: string;
     artist: string;
     image?: string;
     playCount?: number;
+    url?: string;
   };
 
   provider?: 'spotify' | 'youtube' | 'lastfm';
+  trackUrl?: string;
 }
 
 export interface TopTrack {

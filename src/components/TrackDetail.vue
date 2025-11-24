@@ -10,14 +10,41 @@
 
       <div class="content-row">
         <div class="image-container">
-          <img :src="track.image" :alt="track.title" class="album-art" />
-          <div v-if="isVinylMode && !isEinkMode" class="vinyl-glare"></div>
+          <a
+            v-if="track.url"
+            :href="track.url"
+            target="_blank"
+            class="art-link"
+          >
+            <img :src="track.image" :alt="track.title" class="album-art" />
+            <div v-if="isVinylMode && !isEinkMode" class="vinyl-glare"></div>
+            <div class="hover-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+          </a>
+
+          <template v-else>
+            <img :src="track.image" :alt="track.title" class="album-art" />
+            <div v-if="isVinylMode && !isEinkMode" class="vinyl-glare"></div>
+          </template>
         </div>
 
         <div class="info-container">
           <div class="text-group">
             <span class="label">{{ label }}</span>
-            <h2 class="title">{{ track.title }}</h2>
+
+            <h2 class="title">
+              <a
+                v-if="track.url"
+                :href="track.url"
+                target="_blank"
+                class="text-link"
+              >
+                {{ track.title }}
+              </a>
+              <span v-else>{{ track.title }}</span>
+            </h2>
+
             <h3 class="artist">{{ track.artist }}</h3>
           </div>
 
@@ -42,6 +69,7 @@ interface SimpleTrack {
   artist: string
   image: string
   playCount?: number
+  url?: string
 }
 
 defineProps<{
@@ -97,6 +125,18 @@ defineEmits(['close'])
   flex-shrink: 0;
 
   .album-art { width: 100%; height: 100%; object-fit: cover; }
+
+  .art-link {
+    display: block; width: 100%; height: 100%; cursor: pointer; position: relative;
+    &:hover .hover-icon { opacity: 1; }
+  }
+
+  .hover-icon {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.6); padding: 10px; border-radius: 50%;
+    color: white; opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
 }
 
 .info-container {
@@ -112,7 +152,16 @@ defineEmits(['close'])
     opacity: 0.6; margin-bottom: 0.5rem; display: block; border: 1px solid rgba(255,255,255,0.3);
     padding: 4px 8px; border-radius: 4px; width: fit-content;
   }
-  .title { font-size: 2.2rem; margin: 0; line-height: 1.1; font-weight: 700; }
+
+  .title {
+    font-size: 2.2rem; margin: 0; line-height: 1.1; font-weight: 700;
+
+    .text-link {
+      color: inherit; text-decoration: none; border-bottom: 2px solid transparent; transition: border-color 0.2s;
+      &:hover { border-bottom-color: rgba(255,255,255,0.5); }
+    }
+  }
+
   .artist { font-size: 1.2rem; margin: 0.5rem 0 0 0; opacity: 0.8; font-weight: 400; }
 }
 
@@ -126,7 +175,7 @@ defineEmits(['close'])
 }
 
 .stat-circle {
-  background: #ffcc00; /* Last.fm geel */
+  background: #ffcc00;
   color: black;
   width: 60px; height: 60px;
   border-radius: 50%;
@@ -171,6 +220,9 @@ defineEmits(['close'])
   .stat-circle {
     background: white; color: black; border: 2px solid black; box-shadow: none;
   }
+
+  .title .text-link:hover { border-bottom-color: black; }
+  .hover-icon { color: black; background: rgba(255,255,255,0.8); border: 1px solid black; }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
