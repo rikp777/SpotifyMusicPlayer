@@ -1,87 +1,85 @@
-import { ref, watch, nextTick, readonly } from 'vue';
-import type { Ref } from 'vue';
-import { Vibrant } from 'node-vibrant/browser';
+import { ref, watch, nextTick, readonly } from 'vue'
+import type { Ref } from 'vue'
+import { Vibrant } from 'node-vibrant/browser'
 
 interface ColorPalette {
-  text: string;
-  background: string;
+  text: string
+  background: string
 }
 
 interface VibrantPalette {
-  Vibrant?: VibrantSwatch;
-  Muted?: VibrantSwatch;
-  DarkVibrant?: VibrantSwatch;
-  DarkMuted?: VibrantSwatch;
-  LightVibrant?: VibrantSwatch;
-  LightMuted?: VibrantSwatch;
-  [key: string]: VibrantSwatch | undefined;
+  Vibrant?: VibrantSwatch
+  Muted?: VibrantSwatch
+  DarkVibrant?: VibrantSwatch
+  DarkMuted?: VibrantSwatch
+  LightVibrant?: VibrantSwatch
+  LightMuted?: VibrantSwatch
+  [key: string]: VibrantSwatch | undefined
 }
 
 interface VibrantSwatch {
-  getHex(): string;
-  getTitleTextColor(): string;
-  getBodyTextColor(): string;
+  getHex?: () => string
+  getTitleTextColor?: () => string
+  hex?: string
+  titleTextColor?: string
 }
 
-const colorPalette = ref<ColorPalette | null>(null);
+const colorPalette = ref<ColorPalette | null>(null)
 
 export function useAlbumColors(imageUrl: Ref<string | undefined>) {
-
   function setAppColors(palette: ColorPalette) {
-    document.documentElement.style.setProperty(
-      '--color-text-primary',
-      palette.text
-    );
+    document.documentElement.style.setProperty('--color-text-primary', palette.text)
     document.documentElement.style.setProperty(
       '--colour-background-now-playing',
-      palette.background
-    );
+      palette.background,
+    )
   }
 
-  function handleAlbumPalette(palette: any) {
-    const albumColours: ColorPalette[] = [];
+  function handleAlbumPalette(palette: VibrantPalette) {
+    const albumColours: ColorPalette[] = []
 
-    Object.keys(palette).forEach(key => {
-      const swatch = palette[key];
+    Object.keys(palette).forEach((key) => {
+      const swatch = palette[key]
 
       if (swatch) {
-
-        const hex = typeof swatch.getHex === 'function' ? swatch.getHex() : swatch.hex;
-        const text = typeof swatch.getTitleTextColor === 'function' ? swatch.getTitleTextColor() : swatch.titleTextColor;
+        const hex = typeof swatch.getHex === 'function' ? swatch.getHex() : swatch.hex
+        const text =
+          typeof swatch.getTitleTextColor === 'function'
+            ? swatch.getTitleTextColor()
+            : swatch.titleTextColor
 
         if (hex && text) {
           albumColours.push({
             text: text,
-            background: hex
-          });
+            background: hex,
+          })
         }
       }
-    });
+    })
 
     if (albumColours.length === 0) {
-      colorPalette.value = null;
-      return;
+      colorPalette.value = null
+      return
     }
 
-    colorPalette.value = albumColours[0];
+    colorPalette.value = albumColours[0] ?? null
 
     nextTick(() => {
       if (colorPalette.value) {
-        setAppColors(colorPalette.value);
+        setAppColors(colorPalette.value)
       }
-    });
+    })
   }
 
   function getAlbumColours(url: string) {
     if (!url) {
-      colorPalette.value = null;
-      return;
+      colorPalette.value = null
+      return
     }
 
-
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = url;
+    const img = new Image()
+    img.crossOrigin = 'Anonymous'
+    img.src = url
 
     img.onload = () => {
       Vibrant.from(img)
@@ -89,26 +87,30 @@ export function useAlbumColors(imageUrl: Ref<string | undefined>) {
         .clearFilters()
         .getPalette()
         .then((palette) => {
-          handleAlbumPalette(palette as unknown as VibrantPalette);
+          handleAlbumPalette(palette as unknown as VibrantPalette)
         })
-        .catch(error => {
-          console.error('Error with Vibrant.js:', error);
-          colorPalette.value = null;
-        });
-    };
+        .catch((error) => {
+          console.error('Error with Vibrant.js:', error)
+          colorPalette.value = null
+        })
+    }
 
     img.onerror = () => {
-      console.warn('Could not load image for colour extraction');
+      console.warn('Could not load image for colour extraction')
     }
   }
 
-  watch(imageUrl, (newUrl) => {
-    if (newUrl) {
-      getAlbumColours(newUrl);
-    }
-  }, { immediate: true });
+  watch(
+    imageUrl,
+    (newUrl) => {
+      if (newUrl) {
+        getAlbumColours(newUrl)
+      }
+    },
+    { immediate: true },
+  )
 
   return {
-    colorPalette: readonly(colorPalette)
-  };
+    colorPalette: readonly(colorPalette),
+  }
 }

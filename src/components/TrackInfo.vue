@@ -31,12 +31,10 @@
 import { computed } from 'vue'
 import { getEnvBoolean } from '@/utils/general.ts'
 
-
-
 const props = defineProps<{
   title: string
   artists: string[]
-  albumName: string
+  albumName?: string
   releaseDate?: string
   popularity?: number
 
@@ -146,7 +144,7 @@ const popularityText = computed(() => {
   .track-title {
     font-size: clamp(1.1rem, 3vmin, 1.5rem);
     margin-bottom: 4px;
-    line-height: 1.0;
+    line-height: 1;
 
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -160,7 +158,9 @@ const popularityText = computed(() => {
 
   .album-meta-group {
     font-size: 0.6rem;
-    .album-name { font-size: 0.6rem; }
+    .album-name {
+      font-size: 0.6rem;
+    }
   }
 }
 

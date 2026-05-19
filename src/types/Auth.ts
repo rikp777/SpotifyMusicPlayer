@@ -1,60 +1,50 @@
 export interface AuthState {
-  status: boolean;
-  accessToken: string;
-  refreshToken: string;
-  code?: string;
-  clientId?: string;
+  status: boolean
+  accessToken: string
+  refreshToken: string
+}
+
+export interface SpotifyAuthState extends AuthState {
+  clientId: string
+  authCode: string
 }
 
 export interface YouTubeAuthState extends AuthState {
-  expiresIn?: number;
+  expiresIn?: number
+}
+
+export interface TrackSummary {
+  title: string
+  artist: string
+  image?: string
+  url?: string
+}
+
+export interface TopTrack extends TrackSummary {
+  playCount?: number
 }
 
 export interface PlayerState {
-  playing: boolean;
-  trackArtists: string[];
-  trackTitle: string;
-  trackId?: string;
+  playing: boolean
+  trackArtists: string[]
+  trackTitle: string
+  trackId?: string
 
   trackAlbum: {
-    title?: string;
-    image?: string;
-  };
-  progressMs: number;
-  durationMs: number;
-
-  release_date?: string;
-  tags?: string[];
-  popularity?: number;
-
-  nextTrack?: {
-    title: string;
-    artist: string;
-    image?: string;
-    url?: string;
-  };
-  previousTrack?: {
-    title: string;
-    artist: string;
+    title?: string
     image?: string
-    url?: string;
-  };
-  topTrack?: {
-    title: string;
-    artist: string;
-    image?: string;
-    playCount?: number;
-    url?: string;
-  };
+  }
+  progressMs: number
+  durationMs: number
 
-  provider?: 'spotify' | 'youtube' | 'lastfm';
-  trackUrl?: string;
+  release_date?: string
+  tags?: string[]
+  popularity?: number
+
+  nextTrack?: TrackSummary
+  previousTrack?: TrackSummary
+  topTrack?: TopTrack
+
+  provider?: 'spotify' | 'youtube' | 'lastfm'
+  trackUrl?: string
 }
-
-export interface TopTrack {
-  title: string;
-  artist: string;
-  image?: string;
-  playCount?: number;
-}
-

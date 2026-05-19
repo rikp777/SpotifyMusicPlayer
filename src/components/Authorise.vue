@@ -2,24 +2,22 @@
   <div class="authorise">
     <h1 class="authorise__heading">Authorise</h1>
 
-    <p class="authorise__copy">
-      Log in and start listening to music!
-    </p>
+    <p class="authorise__copy">Log in and start listening to music!</p>
 
-    <button
-      class="authorise__button button button--authorise"
-      @click="initAuthorise"
-    >
+    <button class="authorise__button button button--authorise" @click="initSpotifyAuth">
       Log in with Spotify
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-
 import { useSpotifyAuth } from '@/composables/useSpotifyAuth.ts'
 
-const { initAuthorise } = useSpotifyAuth();
+defineOptions({
+  name: 'AuthorisePanel',
+})
+
+const { initSpotifyAuth } = useSpotifyAuth()
 </script>
 
 <style scoped>
