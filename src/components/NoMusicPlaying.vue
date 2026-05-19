@@ -1,6 +1,5 @@
 <template>
   <div class="no-music-playing" :class="{ 'eink-mode': isEinkMode }">
-
     <div class="art-background-container">
       <div class="image-box" v-if="artImage">
         <img
@@ -21,9 +20,7 @@
 
     <div class="content-overlay">
       <div class="message-container">
-        <h1 class="quote-text">
-          "{{ quote }}"
-        </h1>
+        <h1 class="quote-text">"{{ quote }}"</h1>
 
         <div class="quote-attribution">
           <span class="kanye-tag">- Kanye West</span>
@@ -37,9 +34,8 @@
         :disabled="isLoading"
         title="New Inspiration"
       >
-        <span class="icon" :class="{ 'spinning': isLoading }">↻</span>
+        <span class="icon" :class="{ spinning: isLoading }">&#x21bb;</span>
       </button>
-
     </div>
   </div>
 </template>
@@ -65,71 +61,91 @@ const fetchQuote = async () => {
     if (data && data.quote) {
       quote.value = data.quote
     }
-  } catch (e) {
+  } catch {
     quote.value = "I'm not a businessman, I'm a business, man!"
   }
 }
 
 const fetchArt = async () => {
   try {
-    const searchTerms = ['abstract', 'modern art', 'geometric', 'sunflowers', 'landscape', 'pop art', 'minimalism'];
-    const randomSearchTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+    const searchTerms = [
+      'abstract',
+      'modern art',
+      'geometric',
+      'sunflowers',
+      'landscape',
+      'pop art',
+      'minimalism',
+    ]
+    const randomSearchTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)] ?? 'art'
 
-    const searchRes = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=${encodeURIComponent(randomSearchTerm)}&hasImages=true&isPublicDomain=true`);
-    const searchData = await searchRes.json();
+    const searchRes = await fetch(
+      `https://collectionapi.metmuseum.org/public/collection/v1/search?q=${encodeURIComponent(randomSearchTerm)}&hasImages=true&isPublicDomain=true`,
+    )
+    const searchData = await searchRes.json()
 
-    let objectIDs = searchData.objectIDs || [];
+    let objectIDs = searchData.objectIDs || []
 
     if (objectIDs.length === 0) {
-      const fallbackRes = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=art&hasImages=true&isPublicDomain=true`);
-      const fallbackData = await fallbackRes.json();
-      objectIDs = fallbackData.objectIDs || [];
+      const fallbackRes = await fetch(
+        `https://collectionapi.metmuseum.org/public/collection/v1/search?q=art&hasImages=true&isPublicDomain=true`,
+      )
+      const fallbackData = await fallbackRes.json()
+      objectIDs = fallbackData.objectIDs || []
     }
 
-    if (objectIDs.length === 0) return;
+    if (objectIDs.length === 0) return
 
     let foundImage = false
     let attempts = 0
-    const maxAttempts = 5;
+    const maxAttempts = 5
 
     while (!foundImage && attempts < maxAttempts) {
       const randomIndex = Math.floor(Math.random() * objectIDs.length)
       const objectId = objectIDs[randomIndex]
 
-      const objRes = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectId}`)
+      const objRes = await fetch(
+        `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectId}`,
+      )
       const objData = await objRes.json()
 
-      if ((objData.primaryImage && objData.primaryImage.length > 0) || (objData.primaryImageSmall && objData.primaryImageSmall.length > 0)) {
+      if (
+        (objData.primaryImage && objData.primaryImage.length > 0) ||
+        (objData.primaryImageSmall && objData.primaryImageSmall.length > 0)
+      ) {
         artImage.value = objData.primaryImage || objData.primaryImageSmall
-        artTitle.value = objData.title || "Untitled"
-        artArtist.value = objData.artistDisplayName || "Unknown Artist"
+        artTitle.value = objData.title || 'Untitled'
+        artArtist.value = objData.artistDisplayName || 'Unknown Artist'
         foundImage = true
       }
       attempts++
     }
   } catch (e) {
-    console.error("Failed to fetch art", e)
+    console.error('Failed to fetch art', e)
   }
 }
 
 const refreshContent = async () => {
-  if (isLoading.value) return;
-  isLoading.value = true;
-  await Promise.all([fetchQuote(), fetchArt()]);
+  if (isLoading.value) return
+  isLoading.value = true
+  await Promise.all([fetchQuote(), fetchArt()])
   setTimeout(() => {
-    isLoading.value = false;
-  }, 500);
+    isLoading.value = false
+  }, 500)
 }
 
 onMounted(() => {
-  refreshContent();
-  refreshTimer = setInterval(() => {
-    refreshContent();
-  }, 7 * 60 * 1000);
+  refreshContent()
+  refreshTimer = setInterval(
+    () => {
+      refreshContent()
+    },
+    7 * 60 * 1000,
+  )
 })
 
 onUnmounted(() => {
-  if (refreshTimer) clearInterval(refreshTimer);
+  if (refreshTimer) clearInterval(refreshTimer)
 })
 </script>
 
@@ -142,15 +158,17 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: #ffffff;
   background-color: #1a1a1a;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .art-background-container {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
 
   display: flex;
@@ -164,7 +182,7 @@ onUnmounted(() => {
   display: flex;
   max-width: 100vw;
   max-height: 100vh;
-  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 .background-art {
@@ -177,7 +195,9 @@ onUnmounted(() => {
 
   object-fit: contain;
   filter: brightness(0.5) saturate(1.2);
-  transition: filter 0.5s ease, opacity 0.5s ease;
+  transition:
+    filter 0.5s ease,
+    opacity 0.5s ease;
 
   &.is-loading {
     opacity: 0.5;
@@ -187,9 +207,11 @@ onUnmounted(() => {
 
 .gradient-overlay {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: radial-gradient(circle at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.6) 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.6) 100%);
   z-index: 1;
   pointer-events: none;
 }
@@ -209,19 +231,25 @@ onUnmounted(() => {
   gap: 2px;
   max-width: 200px;
   transition: opacity 0.3s ease;
-  text-shadow: 0 1px 2px rgba(0,0,0,1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
 
-  background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
   padding: 5px 10px;
   border-radius: 4px;
 
   &:hover {
     opacity: 1;
-    background: linear-gradient(to left, rgba(0,0,0,0.6), transparent);
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.6), transparent);
   }
 
-  .art-title { font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-  .art-artist { font-style: italic; }
+  .art-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .art-artist {
+    font-style: italic;
+  }
 }
 
 .content-overlay {
@@ -282,13 +310,13 @@ onUnmounted(() => {
 
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    color: rgba(255,255,255,0.9);
+    color: rgba(255, 255, 255, 0.9);
     transform: translateX(-50%) rotate(180deg);
   }
 
@@ -301,12 +329,15 @@ onUnmounted(() => {
   }
 }
 
-@keyframes spin { 100% { transform: rotate(360deg); } }
-
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 /* --- E-INK MODE --- */
 .eink-mode {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   color: #000000;
   text-shadow: none;
 
@@ -315,13 +346,16 @@ onUnmounted(() => {
   }
 
   .art-background-container .background-art {
-    filter: grayscale(100%) contrast(1.2) brightness(1.0);
+    filter: grayscale(100%) contrast(1.2) brightness(1);
     opacity: 0.2;
   }
 
-  .gradient-overlay { background: none; }
+  .gradient-overlay {
+    background: none;
+  }
 
-  .quote-text, .quote-attribution {
+  .quote-text,
+  .quote-attribution {
     color: #000000;
     opacity: 1;
   }

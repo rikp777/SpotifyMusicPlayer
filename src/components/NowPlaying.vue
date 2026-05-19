@@ -23,7 +23,11 @@
             class="cover-link"
             title="Open track"
           >
-            <img :src="player.trackAlbum.image" :alt="player.trackTitle" class="now-playing__image" />
+            <img
+              :src="player.trackAlbum.image"
+              :alt="player.trackTitle"
+              class="now-playing__image"
+            />
           </a>
 
           <img
@@ -61,17 +65,14 @@
           </div>
 
           <div class="meta-tracks-container" v-if="showPreviousTrack || showNextTrack">
-            <div
-              v-if="showMonthlyObsession"
-              :class="{ 'vinyl-sticker-wrapper': isVinylMode }"
-            >
+            <div v-if="showMonthlyObsession" :class="{ 'vinyl-sticker-wrapper': isVinylMode }">
               <queue-item
                 v-if="player.topTrack"
                 :track="player.topTrack"
                 type="top"
                 label="Monthly Obsession"
                 :is-vinyl-mode="isVinylMode"
-                style="cursor: pointer;"
+                style="cursor: pointer"
                 @click="openTrackDetail(player.topTrack, 'Monthly Obsession')"
               />
             </div>
@@ -82,7 +83,7 @@
               type="previous"
               label="Previous"
               :is-vinyl-mode="isVinylMode"
-              style="cursor: pointer;"
+              style="cursor: pointer"
               @click="openTrackDetail(player.previousTrack, 'Previously Played')"
             />
 
@@ -92,7 +93,7 @@
               type="next"
               label="Next"
               :is-vinyl-mode="isVinylMode"
-              style="cursor: pointer;"
+              style="cursor: pointer"
               @click="openTrackDetail(player.nextTrack, 'Up Next')"
             />
           </div>
@@ -123,7 +124,7 @@
 
 <script setup lang="ts">
 import { computed, toRefs, ref, onUnmounted, onMounted } from 'vue'
-import type { PlayerState, AuthState } from '@/types/Auth'
+import type { PlayerState, TrackSummary } from '@/types/Auth'
 import { useAlbumColors } from '@/composables/useAlbumColors'
 import QueueItem from '@/components/QueueItem.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -142,7 +143,6 @@ const autoOpenInterval = Number(import.meta.env.VITE_AUTO_OPEN_FAVORITE_INTERVAL
 const autoOpenDuration = Number(import.meta.env.VITE_AUTO_OPEN_DURATION || 15)
 
 const props = defineProps<{
-  auth: AuthState
   player: PlayerState
 }>()
 
@@ -157,12 +157,14 @@ const showMonthlyObsession = computed(() =>
 )
 const showSpotifyCode = computed(() => getEnvBoolean('SHOW_SPOTIFY_CODE', isVinylMode.value))
 
-const selectedTrack = ref<any>(null)
+type DisplayTrack = TrackSummary & { playCount?: number }
+
+const selectedTrack = ref<DisplayTrack | null>(null)
 const selectedTrackLabel = ref('')
 let autoOpenTimer: number | undefined
 let autoCloseTimer: number | undefined
 
-if (!isEinkMode) {
+if (!isEinkMode.value) {
   useAlbumColors(computed(() => player.value.trackAlbum.image))
 }
 
@@ -173,7 +175,7 @@ function toggleEinkMode() {
   isEinkMode.value = !isEinkMode.value
 }
 
-function openTrackDetail(track: any, label: string) {
+function openTrackDetail(track: DisplayTrack, label: string) {
   selectedTrack.value = track
   selectedTrackLabel.value = label
 }
@@ -214,8 +216,12 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fade-enter-active,
@@ -405,7 +411,9 @@ onUnmounted(() => {
       box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
       border: 2px solid rgba(20, 20, 20, 1);
 
-      &:hover { transform: none; }
+      &:hover {
+        transform: none;
+      }
     }
 
     .now-playing__details {
@@ -418,7 +426,11 @@ onUnmounted(() => {
       border-radius: 50%;
 
       background-color: var(--colour-background-now-playing);
-      background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%);
+      background-image: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(0, 0, 0, 0.3) 100%
+      );
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
 
       color: var(--color-text-primary);

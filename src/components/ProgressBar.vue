@@ -4,9 +4,7 @@
     class="progress-container"
     :class="{ 'is-vinyl': isVinylMode }"
   >
-    <div class="time">
-      {{ formatTime(currentMs) }} / {{ formatTime(durationMs) }}
-    </div>
+    <div class="time">{{ formatTime(currentMs) }} / {{ formatTime(durationMs) }}</div>
     <div class="bar">
       <div class="bar__fill" :style="{ width: `${percentage}%` }"></div>
     </div>

@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="tags && tags.length > 0"
-    class="vibe-tags-minimal"
-    :class="{ 'is-eink': isEinkMode }"
-  >
+  <div v-if="tags && tags.length > 0" class="vibe-tags-minimal" :class="{ 'is-eink': isEinkMode }">
     <span v-for="(tag, index) in tags" :key="tag" class="text-tag">
       #{{ tag }}<span v-if="index < tags.length - 1" class="tag-sep"> </span>
     </span>
@@ -12,7 +8,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  tags: string[]
+  tags?: string[]
   isEinkMode: boolean
 }>()
 </script>

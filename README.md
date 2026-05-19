@@ -1,112 +1,124 @@
-# Spotify Smart Visualizer 🎵
+# Spotify Music Player
 
-A Vue 3 + TypeScript application designed for smart mirrors and dedicated displays. It visualizes the current Spotify playback state with a focus on aesthetics, adaptive colors, and metadata.
+A Vue 3 + TypeScript music visualizer for smart mirrors, wall displays, and always-on dashboards. It can show playback from Spotify, YouTube Music activity, or Last.fm scrobbles with adaptive album colors, queue context, vinyl mode, and an idle art screen.
 
-![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat&logo=vue.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript)
-![Spotify API](https://img.shields.io/badge/Spotify-API-1DB954?style=flat&logo=spotify)
+![Default player](default_player.png)
+![Vinyl player](lp_player.png)
+![Idle screen](idle.png)
 
-## ✨ Features
+## Features
 
-- **Real-time Now Playing:** Shows track, artist, album, and progress bar.
-- **Queue & History:** Displays the **Previous** and **Upcoming** tracks with cover art.
-- **Adaptive Theming:** Background color automatically extracts and adapts to the current album cover.
-- **Vinyl Mode:** A dedicated "LP" view with a rotating record animation for a retro feel.
-- **Smart Idle Screen:** Displays curated modern art from the Met Museum and inspirational quotes when no music is playing.
-- **Spotify Codes:** Generates a scannable code on the fly to share/play the track on other devices.
-- **Touch/Click Controls:** Toggle between List/Vinyl modes and show/hide album names.
+- Real-time Spotify now-playing view with track, artist, album, progress, queue, and listening history.
+- Spotify PKCE authentication for browser-only deployments without exposing a client secret.
+- Optional YouTube and Last.fm provider views.
+- Adaptive theming from the current album cover.
+- Vinyl mode with rotating record artwork.
+- E-ink/high-contrast display mode.
+- Idle screen with public-domain Met Museum artwork and quotes.
+- Optional Spotify code rendering for quick sharing.
 
-![default_player.png](default_player.png)
-![lp_player.png](lp_player.png)
-![idle.png](idle.png)
+## Requirements
 
-## 🛠️ Prerequisites
+- Node.js 20.19+ or 22.12+
+- pnpm 10
+- A Spotify Developer app
+- Optional: a Google OAuth client for YouTube activity
+- Optional: a Last.fm API key and username
 
-- Node.js (v16+)
-- A Spotify Developer Account
-- A Spotify Premium account (recommended for real-time API updates)
-- Optional: Last.fm API Key (for fetching genre/vibe tags)
+## Setup
 
-## 🚀 Installation
+1. Clone the repository.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repo-url>
-    cd your-project-name
-    ```
+   ```bash
+   git clone https://github.com/rikp777/SpotifyMusicPlayer.git
+   cd SpotifyMusicPlayer
+   ```
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+2. Install dependencies.
 
-3.  **Spotify App Setup:**
-    * Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
-    * Create a new app.
-    * Add `http://localhost:5173/callback` (or your production URL) to the **Redirect URIs**.
+   ```bash
+   pnpm install
+   ```
 
-4.  **Environment Variables:**
-    Create a `.env` file in the root directory. Configure the API keys and UI preferences.
-    
-    *Note: The UI configuration is split between Standard (List) mode and Vinyl (LP) mode.*
+3. Copy the example environment file.
 
-    ```env
-    # --- API KEYS ---
+   ```bash
+   cp .env.example .env
+   ```
 
-    # Spotify Configuration
-    VITE_SP_CLIENT_ID="your_spotify_client_id"
-    VITE_SP_CLIENT_SECRET="your_spotify_client_secret"
-    # Ensure this matches your Spotify Dashboard settings
-    VITE_SPOTIFY_REDIRECT_URI="http://localhost:5173/callback"
+4. Configure Spotify.
 
-    # Last.fm (Optional - required for genre/vibe tags)
-    VITE_LASTFM_API_KEY="your_lastfm_api_key"
+   In the Spotify Developer Dashboard, add this redirect URI to your app:
 
+   ```text
+   http://localhost:5173/callback
+   ```
 
-    # --- UI GLOBAL CONFIGURATION ---
+   Then set `VITE_SP_CLIENT_ID` in `.env`. The app uses Authorization Code with PKCE, so no Spotify client secret is needed in the browser.
 
-    # Display Mode: 'standard' (Color) or 'eink' (High contrast B&W)
-    VITE_DISPLAY_TYPE="standard"
+5. Configure optional providers.
 
-    # Show the clickable control buttons on screen?
-    VITE_SHOW_CONTROLS=true
-    
-    # Start directly in the rotating Vinyl view?
-    VITE_START_IN_VINYL_MODE=false
+   Set `VITE_YT_CLIENT_ID` for YouTube activity and `VITE_LASTFM_API_KEY` plus `VITE_LASTFM_USERNAME` for Last.fm.
 
+## Development
 
-    # --- STANDARD MODE SETTINGS (List View) ---
-    VITE_STD_SHOW_ALBUM=false
-    VITE_STD_SHOW_PREVIOUS_TRACK=true
-    VITE_STD_SHOW_NEXT_TRACK=true
-    VITE_STD_SHOW_TRACK_YEAR=false
-    VITE_STD_SHOW_TRACK_POPULARITY=true
-    VITE_STD_SHOW_SPOTIFY_CODE=true
+Start the local Vite server:
 
-
-    # --- VINYL MODE SETTINGS (LP View) ---
-    # Minimalist settings recommended for the record label
-    VITE_VINYL_SHOW_ALBUM=true
-    VITE_VINYL_SHOW_PREVIOUS_TRACK=true
-    VITE_VINYL_SHOW_NEXT_TRACK=true
-    VITE_VINYL_SHOW_TRACK_YEAR=false
-    VITE_VINYL_SHOW_TRACK_POPULARITY=false
-    VITE_VINYL_SHOW_SPOTIFY_CODE=false
-    ```
-
-## 🔑 Scopes & Permissions
-
-This app requires specific permissions to function correctly. Ensure your authentication logic includes these scopes:
-
-* `user-read-currently-playing` (Main player)
-* `user-read-playback-state` (Queue/Next track)
-* `user-read-recently-played` (Previous track)
-
-## 🏃‍♂️ Usage
-
-**Development Server:**
 ```bash
-npm run dev
+pnpm run dev
 ```
+
+Run the production checks:
+
+```bash
+pnpm run lint
+pnpm run build
+```
+
+Apply automatic lint fixes:
+
+```bash
+pnpm run lint:fix
+```
+
+Format source files:
+
+```bash
+pnpm run format
+```
+
+## Environment
+
+The most commonly changed settings are:
+
+```env
+VITE_DISPLAY_TYPE="standard"
+VITE_SHOW_CONTROLS="true"
+VITE_START_IN_VINYL_MODE="false"
+
+VITE_STD_SHOW_ALBUM=true
+VITE_STD_SHOW_PREVIOUS_TRACK=true
+VITE_STD_SHOW_NEXT_TRACK=true
+VITE_STD_SHOW_MONTHLY_OBSESSION=true
+VITE_STD_SHOW_TRACK_YEAR=true
+VITE_STD_SHOW_TRACK_POPULARITY=true
+VITE_STD_SHOW_SPOTIFY_CODE=true
+
+VITE_VINYL_SHOW_ALBUM=false
+VITE_VINYL_SHOW_PREVIOUS_TRACK=true
+VITE_VINYL_SHOW_NEXT_TRACK=true
+VITE_VINYL_SHOW_MONTHLY_OBSESSION=true
+VITE_VINYL_SHOW_TRACK_YEAR=false
+VITE_VINYL_SHOW_TRACK_POPULARITY=false
+VITE_VINYL_SHOW_SPOTIFY_CODE=false
+```
+
+See `.env.example` for the full list.
+
+## GitHub Workflow
+
+Use short-lived branches from `master`, keep project-health changes separate from feature work, and open pull requests with CI passing before merging. The included GitHub Actions workflow installs from `pnpm-lock.yaml`, runs linting, and builds the app on pushes and pull requests targeting `master`.
+
 ## Credits
-This project was inspired by the aesthetics and functionality of **Nowify**.
+
+This project was inspired by the aesthetics and functionality of Nowify.
